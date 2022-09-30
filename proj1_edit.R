@@ -43,7 +43,7 @@ freq_vector
 
 #先确定b中元素个数。检验排在第500的频率是否是唯一的（如果第500和501等是相同频率，就全部纳入）
 freq_sort <- sort(freq_vector, decreasing = TRUE)
-b_number <- sum(freq_sort >= freq_de[500])
+b_number <- sum(freq_sort >= freq_sort[500])
 b_number
 #确定threshold
 threshold <- freq_sort[b_number]
@@ -62,3 +62,32 @@ b2
 #检验了一下b1和b2包含的元素是一样的，个人更偏向用第二种方法，要不threshold没用上
 equal <- sum(b2 %in% b1)
 equal
+
+
+# step 7
+new_index <- match(a,b2) #确定full bible中每个字符对应着的b的位置
+new_index <- c(new_index)
+triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)]) #应该是这个意思？
+triplet
+na_row_index <- which(rowSums(is.na(triplet)) != 0)
+#删掉有na的行，得到新的triplet
+triplet <- triplet[-na_row_index,]
+triplet
+
+#在triplet中数一下前两位确定的情况下，第三位不同情况分别有多少个
+#不知道有没有现成的函数，但看题干描述可能需要自己写个循环来数
+#先看一下三个字符的字符组有哪些情况
+ijk <- unique(triplet)
+ijk
+ijk_num <- nrow(ijk)
+ijk_num
+
+#开始数，要求用循环来数
+#即在triplet中数一下ijk的每一行出现的次数，并储存在t_ijk中
+#感觉一不小心计算量会很大，可以想一想有没有省事一点的方法
+#不知道转换一下数据形式会不会好一些
+t_ijk <- rep(0,ijk_num)
+
+
+
+

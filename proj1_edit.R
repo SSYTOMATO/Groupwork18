@@ -43,7 +43,7 @@ freq_vector
 
 #先确定b中元素个数。检验排在第500的频率是否是唯一的（如果第500和501等是相同频率，就全部纳入）
 freq_sort <- sort(freq_vector, decreasing = TRUE)
-b_number <- sum(freq_sort >= freq_de[500])
+b_number <- sum(freq_sort >= freq_sort[500])
 b_number
 #确定threshold
 threshold <- freq_sort[b_number]

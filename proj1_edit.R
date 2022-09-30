@@ -1,4 +1,4 @@
-setwd("D:/Rgroupwork/Groupwork18")
+setwd("C:/Users/surface/Documents/Rscripts/Groupwork18")
 a <- scan("pg10.txt",what="character",skip=104) ## skip contents
 n <- length(a)
 a <- a[-((n-2886):n)] ## strip license
@@ -40,9 +40,25 @@ index <- match(a,b) #find the vector of indicies indicating which element in the
 tabulate(index)
 freq_vector <- c(tabulate(index)) #把频率装进向量
 freq_vector
-order_vector <- order(freq_vector,decreasing = TRUE) #直接返回位置参数
-threshold <- freq_vector[order_vector[500]]
+
+#先确定b中元素个数。检验排在第500的频率是否是唯一的（如果第500和501等是相同频率，就全部纳入）
+freq_sort <- sort(freq_vector, decreasing = TRUE)
+b_number <- sum(freq_sort >= freq_de[500])
+b_number
+#确定threshold
+threshold <- freq_sort[b_number]
 threshold
+
+#再选取b_number个（虽然正好是500）
+#原方法选出来的500common的b是按照从频率最高到频率最低的顺序排的，改为b1
+order_vector <- order(freq_vector,decreasing = TRUE) #直接返回位置参数
 commom_index <- order_vector[1:500]#取排名前500个的 作为common
-b <- b[commom_index] #set of m ≈ 500 most common words
-b
+b1 <- b[commom_index] #set of m ≈ 500 most common words
+b1
+#下面这个500common的b是按照b原来的顺序把频率高于threshold的拿了出来，写为b2
+common_index2 <- which(freq_vector >= threshold)
+b2 <- b[common_index2]
+b2
+#检验了一下b1和b2包含的元素是一样的，个人更偏向用第二种方法，要不threshold没用上
+equal <- sum(b2 %in% b1)
+equal

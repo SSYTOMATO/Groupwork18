@@ -64,7 +64,11 @@ equal <- sum(b2 %in% b1)
 equal
 
 
+
+
 # step 7
+
+##ZMY
 new_index <- match(a,b2) #确定full bible中每个字符对应着的b的位置
 new_index <- c(new_index)
 triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)]) #应该是这个意思？
@@ -91,3 +95,25 @@ t_ijk <- rep(0,ijk_num)
 
 
 
+##SSY
+#寻找b在a中的位置 并返回a每个位置上对应的b的元素在b中的位置参数
+
+a_index<-match(a,b1)
+a_index <- c(a_index)
+
+#寻找那些非b的位置 并给出在a中的位置参数
+naa_index<-which(is.na(a_index))
+naa_index <- c(naa_index)
+
+#将非b的位置参数去掉 就是和b匹配的位置参数
+anonan<-seq(1,length(a))
+anonan<- anonan[-naa_index]
+anonan
+
+#建立triple
+triple<-cbind(a_index[anonan],a_index[anonan+1],a_index[anonan+2])#以b中元素的位置参数为值
+na_row_index<-which(rowSums(is.na(triple)) != 0)
+na_row_index#有NA的行
+
+unique(triple[,2:3])#挑出所有23列可以有的组合 再接着往前找at就可以
+#这样的话 无论抽哪一组值都很方便 一个NA 两个NA 没有NA

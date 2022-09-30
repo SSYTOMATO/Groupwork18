@@ -111,7 +111,7 @@ anonan<- anonan[-naa_index]
 anonan
 
 #建立triple
-triple<-cbind(a_index[anonan],a_index[anonan+1],a_index[anonan+2])#以b中元素的位置参数为值
+triple<-cbind(a_index[anonan],a_index[anonan+1],a_index[anonan+2])#以b中元素的位置参数为值 也就是ijk的值
 na_row_index<-which(rowSums(is.na(triple)) != 0)
 na_row_index#有NA的行
 

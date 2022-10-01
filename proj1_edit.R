@@ -50,15 +50,10 @@ threshold <- freq_sort[b_number]
 threshold
 
 #再选取b_number个（虽然正好是500）
-#原方法选出来的500common的b是按照从频率最高到频率最低的顺序排的，改为b1
-order_vector <- order(freq_vector,decreasing = TRUE) #直接返回位置参数
-commom_index <- order_vector[1:500]#取排名前500个的 作为common
-b1 <- b[commom_index] #set of m ≈ 500 most common words
-b1
-#下面这个500common的b是按照b原来的顺序把频率高于threshold的拿了出来，写为b2
+#下面这个500common的b是按照b原来的顺序把频率高于threshold的拿了出来，写为b
 common_index2 <- which(freq_vector >= threshold)
-b2 <- b[common_index2]
-b2
+b <- b[common_index2]
+b
 #检验了一下b1和b2包含的元素是一样的，个人更偏向用第二种方法，要不threshold没用上
 equal <- sum(b2 %in% b1)
 equal
@@ -69,7 +64,7 @@ equal
 # step 7
 
 ##ZMY
-new_index <- match(a,b2) #确定full bible中每个字符对应着的b的位置
+new_index <- match(a,b) #确定full bible中每个字符对应着的b的位置
 new_index <- c(new_index)
 triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)]) #应该是这个意思？
 triplet
@@ -77,22 +72,6 @@ na_row_index <- which(rowSums(is.na(triplet)) != 0)
 #删掉有na的行，得到新的triplet
 triplet <- triplet[-na_row_index,]
 triplet
-
-#在triplet中数一下前两位确定的情况下，第三位不同情况分别有多少个
-#不知道有没有现成的函数，但看题干描述可能需要自己写个循环来数
-#先看一下三个字符的字符组有哪些情况
-ikj <- unique(triplet)
-ikj
-ikj_num <- nrow(ijk)
-ikj_num
-
-#开始数，要求用循环来数
-#即在triplet中数一下ijk的每一行出现的次数，并储存在t_ijk中
-#感觉一不小心计算量会很大，可以想一想有没有省事一点的方法
-#不知道转换一下数据形式会不会好一些
-t_ikj <- rep(0,ijk_num)
-
-
 
 
 ##SSY1001
@@ -111,3 +90,27 @@ number_ik <- ik[index,] #找出这个j可以跟的pair
 table(number_ik)
 number_ik_unique <- unique(number_ik) #找出有多少个pair
 number_ik_unique
+
+
+# find array T
+# need some comments
+dim1 <- unique(triplet[,1])
+dim2 <- unique(triplet[,2])
+dim3 <- unique(triplet[,3])
+array_T <- array(0,c(length(dim1),length(dim2),length(dim3)),dimnames = list(dim1,dim2,dim3))
+array_T
+
+for (i in length(dim1)){
+  for (k in length(dim2)){
+    for (j in length(dim3)){
+      match_index <- which(triplet[,1]==dim1[i] & triplet[,2]==dim2[k] & triplet[,3]==dim3[j])
+      array_T[i,k,j] <- length(match_index)
+    }
+  }
+}
+
+#验证
+match_index <- which(triplet[,1]==dim1[1] & triplet[,2]==dim2[1] & triplet[,3]==dim3[1])
+length(match_index)
+
+

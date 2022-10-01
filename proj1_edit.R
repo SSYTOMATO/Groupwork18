@@ -81,39 +81,33 @@ triplet
 #在triplet中数一下前两位确定的情况下，第三位不同情况分别有多少个
 #不知道有没有现成的函数，但看题干描述可能需要自己写个循环来数
 #先看一下三个字符的字符组有哪些情况
-ijk <- unique(triplet)
-ijk
-ijk_num <- nrow(ijk)
-ijk_num
+ikj <- unique(triplet)
+ikj
+ikj_num <- nrow(ijk)
+ikj_num
 
 #开始数，要求用循环来数
 #即在triplet中数一下ijk的每一行出现的次数，并储存在t_ijk中
 #感觉一不小心计算量会很大，可以想一想有没有省事一点的方法
 #不知道转换一下数据形式会不会好一些
-t_ijk <- rep(0,ijk_num)
+t_ikj <- rep(0,ijk_num)
 
 
 
 
-##SSY
-#寻找b在a中的位置 并返回a每个位置上对应的b的元素在b中的位置参数
+##SSY1001
+ikj <- unique(triplet)
 
-a_index<-match(a,b1)
-a_index <- c(a_index)
+ikj
+j <- triplet[,3]
+j_unique<-unique(j) #得出搜出现过的j的种类
+j_unique
+ik <- triplet[,1:2]
 
-#寻找那些非b的位置 并给出在a中的位置参数
-naa_index<-which(is.na(a_index))
-naa_index <- c(naa_index)
 
-#将非b的位置参数去掉 就是和b匹配的位置参数
-anonan<-seq(1,length(a))
-anonan<- anonan[-naa_index]
-anonan
-
-#建立triple
-triple<-cbind(a_index[anonan],a_index[anonan+1],a_index[anonan+2])#以b中元素的位置参数为值 也就是ijk的值
-na_row_index<-which(rowSums(is.na(triple)) != 0)
-na_row_index#有NA的行
-
-unique(triple[,2:3])#挑出所有23列可以有的组合 再接着往前找at就可以
-#这样的话 无论抽哪一组值都很方便 一个NA 两个NA 没有NA
+index <- which(j==j_unique[1]) #找出所有j_unque第一个位置上的j值的位置
+index <-c(index)
+number_ik <- ik[index,] #找出这个j可以跟的pair
+table(number_ik)
+number_ik_unique <- unique(number_ik) #找出有多少个pair
+number_ik_unique

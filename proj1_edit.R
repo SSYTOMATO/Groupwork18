@@ -51,12 +51,9 @@ threshold
 
 #再选取b_number个（虽然正好是500）
 #下面这个500common的b是按照b原来的顺序把频率高于threshold的拿了出来，写为b
-common_index2 <- which(freq_vector >= threshold)
-b <- b[common_index2]
+common_index <- which(freq_vector >= threshold)
+b <- b[common_index]
 b
-#检验了一下b1和b2包含的元素是一样的，个人更偏向用第二种方法，要不threshold没用上
-equal <- sum(b2 %in% b1)
-equal
 
 
 
@@ -103,6 +100,11 @@ array_T
 for (x in 1:nrow(triplet)){
   array_T[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T[triplet[x,1],triplet[x,2],triplet[x,3]]+1
 }
+array_T
 
-
-
+## 每个dim里的顺序好像不是很对，改了一版
+array_T2 <- array(0,c(500,500,500))
+for (x in 1:nrow(triplet)){
+  array_T2[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T2[triplet[x,1],triplet[x,2],triplet[x,3]]+1
+}
+array_T2[2,4,5]

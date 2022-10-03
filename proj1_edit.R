@@ -70,41 +70,14 @@ na_row_index <- which(rowSums(is.na(triplet)) != 0)
 triplet <- triplet[-na_row_index,]
 triplet
 
-
-##SSY1001
-ikj <- unique(triplet)
-
-ikj
-j <- triplet[,3]
-j_unique<-unique(j) #得出搜出现过的j的种类
-j_unique
-ik <- triplet[,1:2]
-
-
-index <- which(j==j_unique[1]) #找出所有j_unque第一个位置上的j值的位置
-index <-c(index)
-number_ik <- ik[index,] #找出这个j可以跟的pair
-table(number_ik)
-number_ik_unique <- unique(number_ik) #找出有多少个pair
-number_ik_unique
-
-
 # find array T
 # need some comments
-dim1 <- unique(triplet[,1])
-dim2 <- unique(triplet[,2])
-dim3 <- unique(triplet[,3])
-array_T <- array(0,c(length(dim1),length(dim2),length(dim3)),dimnames = list(dim1,dim2,dim3))
-array_T
-
+##之前那一版每个dim里的顺序好像不是很对，改了一下
+array_T <- array(0,c(500,500,500))
 for (x in 1:nrow(triplet)){
   array_T[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T[triplet[x,1],triplet[x,2],triplet[x,3]]+1
 }
 array_T
 
-## 每个dim里的顺序好像不是很对，改了一版
-array_T2 <- array(0,c(500,500,500))
-for (x in 1:nrow(triplet)){
-  array_T2[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T2[triplet[x,1],triplet[x,2],triplet[x,3]]+1
-}
-array_T2[2,4,5]
+test <- length(which(triplet[,1]==2 & triplet[,2]==1 & triplet[,3]==481))
+test == array_T[2,1,481]

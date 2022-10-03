@@ -100,17 +100,9 @@ dim3 <- unique(triplet[,3])
 array_T <- array(0,c(length(dim1),length(dim2),length(dim3)),dimnames = list(dim1,dim2,dim3))
 array_T
 
-for (i in length(dim1)){
-  for (k in length(dim2)){
-    for (j in length(dim3)){
-      match_index <- which(triplet[,1]==dim1[i] & triplet[,2]==dim2[k] & triplet[,3]==dim3[j])
-      array_T[i,k,j] <- length(match_index)
-    }
-  }
+for (x in 1:nrow(triplet)){
+  array_T[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T[triplet[x,1],triplet[x,2],triplet[x,3]]+1
 }
 
-#验证
-match_index <- which(triplet[,1]==dim1[1] & triplet[,2]==dim2[1] & triplet[,3]==dim3[1])
-length(match_index)
 
 

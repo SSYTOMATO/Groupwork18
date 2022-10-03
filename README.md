@@ -1,2 +1,3 @@
 # Group18
-我们就在这里做好啦 这样也可以留痕 老师万一要看啥的也方便 
+Repository for group project
+If there is a conflict and you don't know how to resolve it, keep it all and we can discuss it later.

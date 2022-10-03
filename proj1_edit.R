@@ -101,10 +101,7 @@ test2 == matrix_A[2,484]
 #find vector S
 single <- new_index
 vector_S <- c(rep(0,500))
-for (x in 1:length(single)){
-  vector_S[single[x]]=vector_S[single[x]]+1
+for (x in 1:500){
+  vector_S[x]=length(which(single==x))
 }
 vector_S
-
-test3 <- length(which(single==1))
-test3 == vector_S[1]

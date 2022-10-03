@@ -79,5 +79,32 @@ for (x in 1:nrow(triplet)){
 }
 array_T
 
-test <- length(which(triplet[,1]==2 & triplet[,2]==1 & triplet[,3]==481))
-test == array_T[2,1,481]
+test1 <- length(which(triplet[,1]==2 & triplet[,2]==1 & triplet[,3]==481))
+test1 == array_T[2,1,481]
+
+#find matrix A
+pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))]) #应该是这个意思？
+pair
+na_row_index <- which(rowSums(is.na(pair)) != 0)
+pair <- pair[-na_row_index,]
+pair
+
+matrix_A <- matrix(0,nrow=500,ncol=500)
+for (x in 1:nrow(pair)){
+  matrix_A[pair[x,1],pair[x,2]]=matrix_A[pair[x,1],pair[x,2]]+1
+}
+matrix_A
+
+test2 <- length(which(pair[,1]==2 & pair[,2]==484))
+test2 == matrix_A[2,484]
+
+#find vector S
+single <- new_index
+vector_S <- c(rep(0,500))
+for (x in 1:length(single)){
+  vector_S[single[x]]=vector_S[single[x]]+1
+}
+vector_S
+
+test3 <- length(which(single==1))
+test3 == vector_S[1]

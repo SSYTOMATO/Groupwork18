@@ -105,3 +105,43 @@ for (x in 1:500){
   vector_S[x]=length(which(single==x))
 }
 vector_S
+
+
+# step 8
+# try to find whether there is any commom word in b that is never followed by another word in b.
+test_A <- c(rep(0,500))
+for (i in 1:500){
+  test_A[i] <- sum(matrix_A[i,])
+}
+test_A_result <- sum(which(test_A == 0))
+test_A_result # equals 0, verifying that every word in b can be followed by another word in b.
+# Our simulation won't be broken when using S and A to generate the first two words.
+# But similar test for array T is difficult.
+simulate_two_words <- function(vector_S, matrix_A){
+  two_word <- c(0,0)
+  two_word[1] <- sample(1:500, size = 1, prob = vector_S)
+  two_word[2] <- sample(1:500, size = 1, prob = matrix_A[two_word[1],])
+  two_word
+} 
+simulate_text <- function(vector_S, matrix_A, array_T, length_text=50){
+  text <- c(rep(0,length_text))
+  text[c(1,2)] <- simulate_two_words(vector_S, matrix_A)
+  i <- 3
+  repeat{
+    if (sum(array_T[text[i-2],text[i-1],])!=0){
+      text[i] <- sample(1:500, size = 1, prob = array_T[text[i-2],text[i-1],])
+      i <- i+1
+    }else{
+      text[c(i,i+1)] <- simulate_two_words(vector_S, matrix_A)
+      i <- i+2
+    }
+    if (text[length_text]!=0){break}
+  }
+  text
+}
+simulate_index_T <- simulate_text(vector_S, matrix_A, array_T)
+cat(b[simulate_index_T])
+
+# step 9
+simulate_index_S <- sample(1:500, size = 50, prob = vector_S, replace = T)
+cat(b[simulate_index_S])

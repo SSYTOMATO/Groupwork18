@@ -61,39 +61,43 @@ threshold <- freq_sort[b_number]
 common_index <- which(freq_vector >= threshold) # find the index of word with occurrences > threshold
 b <- b[common_index] # the vector of the most common words
 
-# step 7
 
-##ZMY
-new_index <- match(a,b) #确定full bible中每个字符对应着的b的位置
-new_index <- c(new_index)
-triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)]) #应该是这个意思？
-na_row_index <- which(rowSums(is.na(triplet)) != 0)
-#删掉有na的行，得到新的triplet
-triplet <- triplet[-na_row_index,]
+# step 7
+#In this step, we start to find array T, matrix A and vector S
+new_index <- c(match(a,b)) #return a vector of indices indicating the position of each element of a in b
 
 # find array T
-# need some comments
-##之前那一版每个dim里的顺序好像不是很对，改了一下
-array_T <- array(0,c(500,500,500))
+#We use cbind to create a 3 column matrix. 
+#Remove a couple of entries from the end in new_index to form the first column, one from the start and one from the end to form the second column and two from the start for the third column. 
+#Each row indexes a triplet of adjacent words 
+triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)])
+na_row_index <- which(rowSums(is.na(triplet)) != 0)#remove the rows containing NA
+triplet <- triplet[-na_row_index,]
+
+array_T <- array(0,c(500,500,500))#create an array with elements all equal to 0
+#Use a loop to count the times each index of a triplet of words appears in the text. 
+#Each index of array_T represents a triplet of element in one row of the matrix triplet
+#So in the loop, every time we reach a new row of triplet, add one to the corresponding element of array_T and we can get the total frequency.
 for (x in 1:nrow(triplet)){
   array_T[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T[triplet[x,1],triplet[x,2],triplet[x,3]]+1
 }
 
-
 #find matrix A
-pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))]) #应该是这个意思？
-na_row_index <- which(rowSums(is.na(pair)) != 0)
+#Similay to array T, we first find matrix pair, with each row indicating the index of a pair of adjacent words
+pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))]) 
+na_row_index <- which(rowSums(is.na(pair)) != 0)#remove rows with NA
 pair <- pair[-na_row_index,]
 
 matrix_A <- matrix(0,nrow=500,ncol=500)
+#The logic is the same as the for loop in array_T. matrix_A stores the times of index of a pair of word appearing in the text.
 for (x in 1:nrow(pair)){
   matrix_A[pair[x,1],pair[x,2]]=matrix_A[pair[x,1],pair[x,2]]+1
 }
 
-
 #find vector S
 single <- new_index
 vector_S <- c(rep(0,500))
+#count the times that each index of vector_S appears in vector single
 for (x in 1:500){
   vector_S[x]=length(which(single==x))
 }
@@ -146,6 +150,7 @@ simulate_index_T <- simulate_text(vector_S, matrix_A, array_T) # generate a vect
 cat(b[simulate_index_T]) # print the simulated words
 
 # step 9
+#Directly simulate 50 words based on probability implied by vector_S， with replacement
 simulate_index_S <- sample(1:500, size = 50, prob = vector_S, replace = T)
 cat(b[simulate_index_S])
 

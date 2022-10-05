@@ -42,23 +42,22 @@ a_with_capital <- split_punct(bible, bible_punct) # bible text with splitted pun
 
 
 # step 6
+# In this step, we want to find a vector containing about 500 most common words.
 a <- tolower(a_with_capital) # bible vector with lower case letters
 b <- unique(a) # find the vector of unique words
+index <- match(a,b) # find the vector of indicies indicating which element in b each element in a corresponds to
 
-index <- match(a,b) #find the vector of indicies indicating which element in the unique word vector each
-#element in the (lower case) bible text corresponds to
-freq_vector <- c(tabulate(index)) #把频率装进向量
+freq_vector <- c(tabulate(index)) # find the frequency of each element of b in a 
+freq_sort <- sort(freq_vector, decreasing = TRUE) # use sort function to get a decreasingly ordered frequency vector
 
-#先确定b中元素个数。检验排在第500的频率是否是唯一的（如果第500和501等是相同频率，就全部纳入）
-freq_sort <- sort(freq_vector, decreasing = TRUE)
-b_number <- sum(freq_sort >= freq_sort[500])
-#确定threshold
+# Now determine the length of b, which is around 500.
+# Considering that the 501th in freq_sort may have the same frequency with the 500th, we contain all frequencies greater or equal to 500th.
+b_number <- sum(freq_sort >= freq_sort[500]) # sum function helps count the number of TRUE
+# find a threshold number of occurrences at which a word should be included in the set of m ≈ 500 most common words
 threshold <- freq_sort[b_number]
 
-#再选取b_number个（虽然正好是500）
-#下面这个500common的b是按照b原来的顺序把频率高于threshold的拿了出来，写为b
-common_index <- which(freq_vector >= threshold)
-b <- b[common_index]
+common_index <- which(freq_vector >= threshold) # find the index of word with occurrences > threshold
+b <- b[common_index] # the vector of the most common words
 
 # step 7
 
@@ -99,6 +98,13 @@ for (x in 1:500){
 
 
 # step 8
+# In this step, we simulate 50-word sections from our model.
+# The complete process is: firstly, randomly select a word according to the probability implied by S,
+# then choose the second word according to the first word and the probability implied by A,
+# and then choose the following words according to the last two words and the probability implied by T.
+# We can do this by loop, but need to make sure that in the process of looping, 
+# we will not fail to find the next word because the probability is 0.
+# So verify matrix A and array T.
 # try to find whether there is any commom word in b that is never followed by another word in b.
 test_A <- c(rep(0,500))
 for (i in 1:500){
@@ -107,31 +113,35 @@ for (i in 1:500){
 test_A_result <- sum(which(test_A == 0))
 test_A_result # equals 0, verifying that every word in b can be followed by another word in b.
 # Our simulation won't be broken when using S and A to generate the first two words.
-# But similar test for array T is difficult.所以用了if
+# a function to simulate the first two words (index)
 simulate_two_words <- function(vector_S, matrix_A){
   two_word <- c(0,0)
-  two_word[1] <- sample(1:500, size = 1, prob = vector_S)
+  two_word[1] <- sample(1:500, size = 1, prob = vector_S) # randomly select one number from 1 to 500 based on the prob implied by vector_S
   two_word[2] <- sample(1:500, size = 1, prob = matrix_A[two_word[1],])
   two_word
 } 
+
+# However, similar test for array T is difficult.
+# So we add if condition in our code to make sure that our loop can run without interruption.
+# a function to simulate the text (index) with default length 50
 simulate_text <- function(vector_S, matrix_A, array_T, length_text=50){
   text <- c(rep(0,length_text))
-  text[c(1,2)] <- simulate_two_words(vector_S, matrix_A)
-  i <- 3
+  text[c(1,2)] <- simulate_two_words(vector_S, matrix_A) # simulate the first two words
+  i <- 3 # a position index which is useful in loop
   repeat{
-    if (sum(array_T[text[i-2],text[i-1],])!=0){
-      text[i] <- sample(1:500, size = 1, prob = array_T[text[i-2],text[i-1],])
-      i <- i+1
-    }else{
-      text[c(i,i+1)] <- simulate_two_words(vector_S, matrix_A)
-      i <- i+2
+    if (sum(array_T[text[i-2],text[i-1],])!=0){ # "not equal to 0" means simulating the following word by array T works well
+      text[i] <- sample(1:500, size = 1, prob = array_T[text[i-2],text[i-1],]) # simulate the i-th word based on the last two word and the corresponding prob
+      i <- i+1 # the next loop is to simulate a word for the next position in text
+    }else{ # else "equal to 0" means we can find the following word by T
+      text[c(i,i+1)] <- simulate_two_words(vector_S, matrix_A) # use S and A again to "restart"
+      i <- i+2 # the next position that needs to be filled is i+2
     }
-    if (text[length_text]!=0){break}
+    if (text[length_text]!=0){break} # when the last term in text is filled with "something", the loop should be stopped
   }
-  text
+  text #return text
 }
-simulate_index_T <- simulate_text(vector_S, matrix_A, array_T)
-cat(b[simulate_index_T])
+simulate_index_T <- simulate_text(vector_S, matrix_A, array_T) # generate a vector of word index by the above function
+cat(b[simulate_index_T]) # print the simulated words
 
 # step 9
 simulate_index_S <- sample(1:500, size = 50, prob = vector_S, replace = T)

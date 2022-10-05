@@ -22,7 +22,7 @@ bible <- strsplit(a," ") # a vector of original bible text
 # And name the procedure split_punct function.
 split_punct <- function(word_vector, punct_vector){
   for (punct in punct_vector){
-    ii <- grep(punct, word_vector, fixed = TRUE) # use grep to find the position indes of specific punctuation marks
+    ii <- grep(punct, word_vector, fixed = TRUE) # Use grep to find the position indes of specific punctuation marks
     new_word <- rep("", length(ii) + length(word_vector))
     iis <- ii + 1:length(ii) # Decision the position index of specific punctuation marks, who will be placed back into the vector of new_words as new individual items.
     new_word[iis] <- punct # Placed back all specific punctuation marks into the vector of new_words.
@@ -39,8 +39,8 @@ split_punct <- function(word_vector, punct_vector){
 
 # step 5
 # The bible text is processed using the split_punct function.
-bible_punct <- c(",",".", ";", "!", ":", "?") # a vector of punctuations in bible
-a_with_capital <- split_punct(bible, bible_punct) # bible text with splitted punctuations
+bible_punct <- c(",",".", ";", "!", ":", "?") # A vector of punctuations in bible
+a_with_capital <- split_punct(bible, bible_punct) # Bible text with splitted punctuations
 
 
 # step 6
@@ -150,26 +150,44 @@ simulate_index_S <- sample(1:500, size = 50, prob = vector_S, replace = T)
 cat(b[simulate_index_S])
 
 # step 10
+#In this step, we would like to replace the words that most often start with a capital letter with an uppercase initial form, 
+#as opposed to the words in the previous b, which are all lowercase forms.
+
 unique_a_with_capital <- unique(a_with_capital) # Find vector unique_a_with_capital of unique words in vectors containing words beginning with capital letters.
 unique_a <- unique(a)# Find vector unique_a of unique words in vectors containing only words beginning with lowercase letters
+
 # Using match funtion, returns a vector of the positions of (unique_a_with_capital) matches of unique_a_with_capital in unique_a.
-# The positions that are not successfully matched are the positions of all word beginning with an capital letter, which returns NA. 
+# The positions that are not successfully matched are the positions of all words beginning with an capital letter, which returns NA. 
 # Finally we can use these position index to get all the words that start with an capital letter, forming the vector capital.
 capital <- unique_a_with_capital[is.na(match(unique_a_with_capital,unique_a))]
-capital_index <- match(a_with_capital,capital)#returns a vector of the positions of (a_wth_capital) matches of a_with_capital in capital. It is convenient for us to subsequently use the tabulate function to count how many times each word beginning with capital letter appears.
+
+#returns a vector of the positions of (a_wth_capital) matches of a_with_capital in capital. 
+#It is convenient for us to subsequently use the tabulate function 
+#to count how many times each word beginning with capital letter appears.
+capital_index <- match(a_with_capital,capital)
+
 #Converting the capital vector to all lowercase and matching it with a, a vector containing all possible words, gives the position index. 
-#It is convenient for us to subsequently use the tabulate function to calculate the total number of occurrences in the text of all words that have had their initial capital letters. 
-#This total contains both the number of times the initial letter is capitalised and lower-cased.
+#It is convenient for us to subsequently use the tabulate function to calculate the total number of occurrences in the text 
+#of all words that have had their initial letter be capital. 
 lower_capital_index <- match(a, tolower(capital))
-freq_capital <- tabulate(capital_index)
-freq_lower_capital <- tabulate(lower_capital_index)
+
+freq_capital <- tabulate(capital_index) #The total number of occurrences in the text of all words that have had their initial letter be capital.
+freq_lower_capital <- tabulate(lower_capital_index)#Total frequency of the word which can start with both lowercase and capital letters.
 prop <- freq_capital/freq_lower_capital#Calculate the proportion of start with capital letter's frequency in the total frequency of the word which can start with both lowercase and capital letters.  
-most_often_index <- which(prop>0.5)# Find position index of the part whose proportion is larger than 50%.
+most_often_index <- which(prop>0.5)# Find position index of the part whose proportion is larger than 50%, as the most common part.
 most_often <- capital[most_often_index]# Using the position index, find the words that most often start with a capital letter
 most_often_lower <- tolower(most_often)# Change all words in lower case in order to match with b_with_capital, to find the position index of the word start with capital letter.
 b_with_capital <- b
-match_index <- match(b_with_capital,most_often_lower)#returns a vector of the positions of (b_with_capital) matches of b_with_capital in most_often_lower.
-replace_index <- which(!is.na(match_index))# Index not equals to na means that we can find most_often_lower in b_with_capital. Therefore, we should change the part in b_with_capital which is same with most pften start with capital letter to the form that start with capital letter
-#Find the position index of the part that we should change the word with lowercase initial letter to capital initial letter.
-b_with_capital[replace_index] <- most_often[match_index[replace_index]]# Change the word
+
+# Returns a vector of the positions of (b_with_capital) matches of b_with_capital in most_often_lower.
+match_index <- match(b_with_capital,most_often_lower)
+
+
+# Find position index which not equals to na, because it means that 
+# in this position we can find word in most_often_lower vector in b_with_capital vector. 
+replace_index <- which(!is.na(match_index))
+
+# Therefore, we should change these words in b_with_capital 
+# which is same with most often start with capital letter to the form that start with capital letter
+b_with_capital[replace_index] <- most_often[match_index[replace_index]]
 cat(b_with_capital[simulate_index_T])

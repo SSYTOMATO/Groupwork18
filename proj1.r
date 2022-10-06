@@ -78,56 +78,62 @@ b <- b[common_index] # the vector of the most common words
 #-------------------------------------------------------------------------------
 
 # step 7
-#In this step, we start to find array T, matrix A and vector S
+# In this step, we start to find array T, matrix A and vector S
 
 new_index <- c(match(a,b)) # indicies indicating which element in b each element in a corresponds to
 
 # find array T
-# We use cbind to create a 3 column matrix. 
-# Remove a couple of entries from the end in new_index to form the first column, one from the start and one from the end to form the second column and two from the start for the third column. 
-# Each row indexes a triplet of adjacent words 
+
+# use cbind to create a 3 column matrix whose each row indexes a triplet of adjacent words 
 triplet <- cbind(new_index[1:(length(new_index)-2)], new_index[2:(length(new_index)-1)], new_index[3:length(new_index)])
-na_row_index <- which(rowSums(is.na(triplet)) != 0)#remove the rows containing NA
+
+# remove the rows containing NA
+na_row_index <- which(rowSums(is.na(triplet)) != 0)
 triplet <- triplet[-na_row_index,]
 
-array_T <- array(0,c(500,500,500))#create an array with elements all equal to 0
-#Use a loop to count the times each index of a triplet of words appears in the text. 
-#Each index of array_T represents a triplet of element in one row of the matrix triplet
-#So in the loop, every time we reach a new row of triplet, add one to the corresponding element of array_T and we can get the total frequency.
+# loop through triplets adding 1 to T[i,k,j] every time the jth common word follows the pair i,k
+array_T <- array(0,c(500,500,500))
 for (x in 1:nrow(triplet)){
-  array_T[triplet[x,1],triplet[x,2],triplet[x,3]]=array_T[triplet[x,1],triplet[x,2],triplet[x,3]]+1
+  array_T[triplet[x,1],triplet[x,2],triplet[x,3]] = array_T[triplet[x,1],triplet[x,2],triplet[x,3]] + 1
 }
 
-#find matrix A
-#Similay to array T, we first find matrix pair, with each row indicating the index of a pair of adjacent words
+# find matrix A
+
+# Similar to array T
+# find matrix pair with each row indicating the index of a pair of adjacent words
 pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))]) 
-na_row_index <- which(rowSums(is.na(pair)) != 0)#remove rows with NA
+# remove rows with NA
+na_row_index <- which(rowSums(is.na(pair)) != 0)
 pair <- pair[-na_row_index,]
 
-matrix_A <- matrix(0,nrow=500,ncol=500)
-#The logic is the same as the for loop in array_T. matrix_A stores the times of index of a pair of word appearing in the text.
+# same as the for loop in array_T
+matrix_A <- matrix(0, nrow=500, ncol=500)
 for (x in 1:nrow(pair)){
-  matrix_A[pair[x,1],pair[x,2]]=matrix_A[pair[x,1],pair[x,2]]+1
+  matrix_A[pair[x,1],pair[x,2]] = matrix_A[pair[x,1],pair[x,2]] + 1
 }
 
-#find vector S
+# find vector S
+
 single <- new_index
 vector_S <- c(rep(0,500))
-#count the times that each index of vector_S appears in vector single
+# count the times that each index of vector_S appears in vector single
 for (x in 1:500){
-  vector_S[x]=length(which(single==x))
+  vector_S[x] = length(which(single == x))
 }
 
 #-------------------------------------------------------------------------------
 
 # step 8
 # In this step, we simulate 50-word sections from our model.
+
 # The complete process is: firstly, randomly select a word according to the probability implied by S,
 # then choose the second word according to the first word and the probability implied by A,
 # and then choose the following words according to the last two words and the probability implied by T.
+
 # We can do this by loop, but need to make sure that in the process of looping, 
 # we will not fail to find the next word because the probability is 0.
 # So verify matrix A and array T.
+
 # For A, we try to find whether there is any commom word in b that is never followed by another word in b.
 test_A <- c(rep(0,500))
 for (i in 1:500){
@@ -156,7 +162,7 @@ simulate_text <- function(vector_S, matrix_A, array_T, length_text=50){
   
   repeat{
     # "!= 0" means simulating the following word by array T works well
-    if (sum(array_T[text[i-2],text[i-1],])!=0){ 
+    if (sum(array_T[text[i-2],text[i-1],]) != 0){ 
       # simulate the i-th word based on the last two words and the corresponding prob
       text[i] <- sample(1:500, size = 1, prob = array_T[text[i-2],text[i-1],]) 
       # the next loop is to simulate a word for the next position in text
@@ -170,7 +176,7 @@ simulate_text <- function(vector_S, matrix_A, array_T, length_text=50){
     }
     
     # when the last term in text is filled with "something", the loop should be stopped
-    if (text[length_text]!=0){break}
+    if (text[length_text] != 0){break}
   }
   text #return text
 }
@@ -184,6 +190,7 @@ cat(b[simulate_index_T])
 #-------------------------------------------------------------------------------
 
 # step 9
+
 # Directly simulate 50 words based on probability implied by vector_S， with replacement
 simulate_index_S <- sample(1:500, size = 50, prob = vector_S, replace = T)
 cat(b[simulate_index_S])
@@ -191,47 +198,44 @@ cat(b[simulate_index_S])
 #-------------------------------------------------------------------------------
 
 # step 10
-#In this step, we would like to replace the words that most often start with a capital letter with an uppercase initial form, 
-#as opposed to the words in the previous b, which are all lowercase forms.
+# In this step, we would like to replace the words that most often start with a capital letter in original text, 
+# also start with a capital letter in our simulation
 
-unique_a_with_capital <- unique(a_with_capital) # Find vector unique_a_with_capital of unique words in vectors containing words beginning with capital letters.
-unique_a <- unique(a)# Find vector unique_a of unique words in vectors containing only words beginning with lowercase letters
+unique_a_with_capital <- unique(a_with_capital) # unique words including those containing capital letters
+unique_a <- unique(a)# unique words only containing lowercase letters
 
-# Using match funtion, returns a vector of the positions of (unique_a_with_capital) matches of unique_a_with_capital in unique_a.
-# The positions that are not successfully matched are the positions of all words beginning with an capital letter, which returns NA. 
-# Finally we can use these position index to get all the words that start with an capital letter, forming the vector capital.
+# all the words that contains capital letter
 capital <- unique_a_with_capital[is.na(match(unique_a_with_capital,unique_a))]
 
-#returns a vector of the positions of (a_wth_capital) matches of a_with_capital in capital. 
-#It is convenient for us to subsequently use the tabulate function 
-#to count how many times each word beginning with capital letter appears.
 capital_index <- match(a_with_capital,capital)
+freq_capital <- tabulate(capital_index) # vector of its frequency
 
-#Converting the capital vector to all lowercase and matching it with a, a vector containing all possible words, gives the position index. 
-#It is convenient for us to subsequently use the tabulate function to calculate the total number of occurrences in the text 
-#of all words that have had their initial letter be capital. 
-lower_capital_index <- match(a, tolower(capital))
-lower_capital_index
+lower_capital <- tolower(capital)
+unique_lower <- unique(lower_capital) # since words containing capital letters may have several forms (e.g. The & THE)
+unique_lower_index <- match(a, unique_lower)
+freq_lower_unique <- tabulate(unique_lower_index) # frequency of words of both uppercase and lowercase
 
-freq_capital <- tabulate(capital_index) #The total number of occurrences in the text of all words that have had their initial letter be capital.
-freq_lower_capital <- tabulate(lower_capital_index)#Total frequency of the word which can start with both lowercase and capital letters.
-prop <- freq_capital/freq_lower_capital#Calculate the proportion of start with capital letter's frequency in the total frequency of the word which can start with both lowercase and capital letters.  
-most_often_index <- which(prop>0.5)# Find position index of the part whose proportion is larger than 50%, as the most common part.
-most_often <- capital[most_often_index]# Using the position index, find the words that most often start with a capital letter
-most_often_lower <- tolower(most_often)# Change all words in lower case in order to match with b_with_capital, to find the position index of the word start with capital letter.
-b_with_capital <- b
+# Since unique_lower is shorter than the capital, which will be a problem when calculating proportion
+# we use lower_capital (same length with capital)
+# match lower_capital and unique_lower, find the right position index and insert the corresponding frequency into freq_lower_capital
+freq_lower_capital <- c(rep(0,length(lower_capital)))
+freq_lower_capital <- freq_lower_unique[match(lower_capital,unique_lower)]
 
-# Returns a vector of the positions of (b_with_capital) matches of b_with_capital in most_often_lower.
+prop <- freq_capital/freq_lower_capital # (words appear containing capital letters)/(words appear)  
+most_often_index <- which(prop>0.5) # proportion larger than 50% considered as the most often
+most_often <- capital[most_often_index] # from index to words
+most_often_lower <- tolower(most_often) 
+
+b_with_capital <- b # our new b to simulate text with capital letters
+
+# the index of words in b_with_capital that need to be changed to uppercase
 match_index <- match(b_with_capital,most_often_lower)
-
-
-# Find position index which not equals to na, because it means that 
-# in this position we can find word in most_often_lower vector in b_with_capital vector. 
 replace_index <- which(!is.na(match_index))
 
-# Therefore, we should change these words in b_with_capital 
-# which is same with most often start with capital letter to the form that start with capital letter
+# replace the target words with the form containing capital letters
 b_with_capital[replace_index] <- most_often[match_index[replace_index]]
+
+# simulate the text containing capital letters
 cat(b_with_capital[simulate_index_T])
 
 

@@ -137,7 +137,7 @@ for (x in 1:500){
 # we will not fail to find the next word because the probability is 0.
 # So verify matrix A and array T.
 
-# For A, we try to find whether there is any commom word in b that is never followed by another word in b.
+# For A, we try to find whether there is any common word in b that is never followed by another word in b.
 test_A <- c(rep(0,500))
 for (i in 1:500){
   test_A[i] <- sum(matrix_A[i,])

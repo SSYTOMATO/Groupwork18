@@ -1,10 +1,11 @@
+# Group 18
 # Group member: Shangyun Sun(S2330859); Ziyi Gu(S2307232); Mengyao Zhang(S2049018).
 
 # Shangyun Sun wrote codes of step 4 & 5 & 10.
 # Ziyi Gu wrote codes of step 7 & 9.
 # Mengyao Zhang wrote codes of step 6 & 8.
 # Each of us double-checked and optimized others' codes.  
-# Everyone undertakes roughly 1/3 of the work.
+# Everyone undertook roughly 1/3 of the work.
 
 #-------------------------------------------------------------------------------
 
@@ -101,7 +102,8 @@ for (x in 1:nrow(triplet)){
 
 # Similar to array T
 # find matrix pair with each row indicating the index of a pair of adjacent words
-pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))]) 
+pair <- cbind(new_index[1:(length(new_index)-1)], new_index[2:(length(new_index))])
+
 # remove rows with NA
 na_row_index <- which(rowSums(is.na(pair)) != 0)
 pair <- pair[-na_row_index,]
@@ -116,6 +118,7 @@ for (x in 1:nrow(pair)){
 
 single <- new_index
 vector_S <- c(rep(0,500))
+
 # count the times that each index of vector_S appears in vector single
 for (x in 1:500){
   vector_S[x] = length(which(single == x))

@@ -1,9 +1,9 @@
 # Group 18
 # Group member: Shangyun Sun(S2330859); Ziyi Gu(S2307232); Mengyao Zhang(S2049018).
 
-# Shangyun Sun wrote codes of step 4 & 5 & 10.
-# Ziyi Gu wrote codes of step 7 & 9.
-# Mengyao Zhang wrote codes of step 6 & 8.
+# Shangyun Sun wrote codes of step 4 & 5 & 6 & 10.
+# Ziyi Gu wrote codes of step 7 & 9 & 10.
+# Mengyao Zhang wrote codes of step 6 & 8 & 10.
 # Each of us double-checked and optimized others' codes.  
 # Everyone undertook roughly 1/3 of the work.
 
@@ -65,16 +65,12 @@ index <- match(a,b) # indicies indicating which element in b each element in a c
 freq_vector <- c(tabulate(index)) # the frequency of b's elements in a
 freq_sort <- sort(freq_vector, decreasing = TRUE) # a decreasingly ordered frequency vector
 
-# Now determine the length of b, which is around 500.
-# Considering that the 501th in freq_sort may have the same frequency with the 500th
-# We contain all frequencies greater or equal to 500th.
-b_number <- sum(freq_sort >= freq_sort[500]) # sum function helps count the number of TRUE
-
 # a threshold number of occurrences at which a word should be included in the set of m≈500 most common words
 threshold <- freq_sort[b_number]
 
 common_index <- which(freq_vector >= threshold) # the index of word with occurrences >= threshold
 b <- b[common_index] # the vector of the most common words
+length(b) # exactly 500
 
 #-------------------------------------------------------------------------------
 

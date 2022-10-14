@@ -207,11 +207,11 @@ freq[length] <- freq[length]+1
 # a new dloop function from zmy
 
 dloop <- function(n,nreps=10000){
-  freq <- rep(0,2*n+1)
+  freq <- rep(0,2*n)
   for (reps in 1:nreps){
     u <- sample(2*n,2*n)
     u_index <- 1:(2*n)
-    length_list <- c()
+    len_list <- c()
     while (length(u_index) != 0){
       first <- u_index[1]
       k <- first
@@ -223,14 +223,11 @@ dloop <- function(n,nreps=10000){
         ring <- c(ring,k)
       }
       u_index <- u_index[-which(u_index %in% ring)]
-      length_list <- c(length_list,length)
+      len_list <- c(len_list,length)
     }
-    length_list <- c(length_list, 2*n+1)
-    length_list <- tabulate(unique(length_list))
-    freq <- freq + length_list
+    freq[which(1:(2*n) %in% len_list)] <- freq[which(1:(2*n) %in% len_list)] + 1
   }
-  print(freq)
-  freq[-(2*n+1)]/nreps
+  freq/nreps
 }
 
 test <- dloop(50)
@@ -238,10 +235,11 @@ test
 prob <- 1 - sum(test[51:100])
 prob
 
-set.seed(3)
+set.seed(7)
 Pall(50,1)
-set.seed(3)
+set.seed(7)
 test <- dloop(50)
 test
 prob <- 1 - sum(test[51:100])
 prob  # exactly same as Pall(50,1)
+

@@ -137,3 +137,43 @@ for (strategy in 1:3){
   matrix_n50[strategy,2] <- Pall(50,strategy)
 }
 matrix_n50
+
+
+dloop <- function(n,nreps){
+  freq <- c(rep(0,2*n))
+  for (rep in 1:nreps){
+    u <- sample(2*n,2*n)
+    u_index <- sample(2*n,1)
+    for (i in 1:(2*n)){
+      if (u_index != u[u_index]){
+        u_index <- u[u_index]
+      } else {
+        freq[i] <- freq[i] + 1
+        break
+      }   
+    }
+  }
+  prob <- freq/nreps
+  print(prob)
+}
+
+dloop <- function(n,nreps){
+  freq <- c(rep(0,2*n))
+  for (rep in 1:nreps){
+    u <- sample(2*n,2*n)
+    for (k in 1:(2*n)){
+      u_index <- k
+      length <- rep(1,2*n)
+      while (u_index != u[u_index]){
+      u_index <- u[u_index]
+      length[k] <- length[k] + 1
+      } 
+    }
+    length <- unique(length)
+    for (i in length){
+      freq[i] = freq[i] + 1
+    }
+  }
+  prob <- freq/nreps
+  print(prob)
+}

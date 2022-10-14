@@ -139,6 +139,8 @@ for (strategy in 1:3){
 matrix_n50
 
 
+# dloop from gzy
+
 dloop <- function(n,nreps){
   freq <- c(rep(0,2*n))
   for (rep in 1:nreps){
@@ -158,7 +160,52 @@ dloop <- function(n,nreps){
 }
 
 
-# new code of dloop function from zmy
+
+# Q5 from ssy
+
+dloop <- function(n,nreps){
+  
+  freq <- c(rep(0,2*n))
+  u_index <- seq(1,2*n)
+  for (rep in 1:nreps){
+    u <- sample(2*n,2*n)
+    k <- sample(u_index,1)
+    start_value <- k
+    length <- 1
+    while (k != u[k]) {
+      k <- u[k]
+      if(start_value == u[k]){break}
+      length <- length+1}
+    freq[length] <- freq[length]+1
+    rep <- rep+1
+  }
+  prob <- freq/nreps
+  print(prob)
+}
+
+dloop(50,10000)
+
+n<-5 
+u <- sample(2*n,2*n)
+u_index <- seq(1,2*n)
+i<-1
+
+k <- 1
+length <-1
+while (k != u[k]) {
+  k <- u[k]
+  if(u_index[1] == u[k]){break}
+  length <- length+1
+  }
+length
+i <- i+1
+freq[length] <- freq[length]+1
+
+
+
+
+# a new dloop function from zmy
+
 dloop <- function(n,nreps=10000){
   freq <- rep(0,2*n+1)
   for (reps in 1:nreps){

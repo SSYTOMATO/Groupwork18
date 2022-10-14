@@ -157,23 +157,44 @@ dloop <- function(n,nreps){
   print(prob)
 }
 
-dloop <- function(n,nreps){
-  freq <- c(rep(0,2*n))
-  for (rep in 1:nreps){
+
+# new code of dloop function from zmy
+dloop <- function(n,nreps=10000){
+  freq <- rep(0,2*n+1)
+  for (reps in 1:nreps){
     u <- sample(2*n,2*n)
-    for (k in 1:(2*n)){
-      u_index <- k
-      length <- rep(1,2*n)
-      while (u_index != u[u_index]){
-      u_index <- u[u_index]
-      length[k] <- length[k] + 1
-      } 
+    u_index <- 1:(2*n)
+    length_list <- c()
+    while (length(u_index) != 0){
+      first <- u_index[1]
+      k <- first
+      ring <- k
+      length <- 1
+      while (u[k] != first){
+        k <- u[k]
+        length <- length + 1
+        ring <- c(ring,k)
+      }
+      u_index <- u_index[-which(u_index %in% ring)]
+      length_list <- c(length_list,length)
     }
-    length <- unique(length)
-    for (i in length){
-      freq[i] = freq[i] + 1
-    }
+    length_list <- c(length_list, 2*n+1)
+    length_list <- tabulate(unique(length_list))
+    freq <- freq + length_list
   }
-  prob <- freq/nreps
-  print(prob)
+  print(freq)
+  freq[-(2*n+1)]/nreps
 }
+
+test <- dloop(50)
+test
+prob <- 1 - sum(test[51:100])
+prob
+
+set.seed(3)
+Pall(50,1)
+set.seed(3)
+test <- dloop(50)
+test
+prob <- 1 - sum(test[51:100])
+prob  # exactly same as Pall(50,1)

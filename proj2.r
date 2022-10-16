@@ -3,10 +3,13 @@
 
 # Github repo: https://github.com/SSYTOMATO/Groupwork18.git
 
-# Shangyun Sun (some contributions).
-# Ziyi Gu (some contributions).
-# Mengyao Zhang (some contributions).
-# Each of us double-checked and optimized others' codes.  
+# Shangyun Sun: wrote the function Unit, Pone and corresponding comments;
+#               visualized the probability.
+# Ziyi Gu: wrote part of the function dloop and corresponding comments;
+#          provided all examples' codes and analysis.
+# Mengyao Zhang: wrote the function Pall and part of the function dloop;
+#                wrote the overview comment and comments for function Pall.
+# Each of us double-checked and optimized others' codes.
 # Everyone undertook roughly 1/3 of the work.
 
 #-------------------------------------------------------------------------------
@@ -235,18 +238,11 @@ test
 prob <- 1 - sum(test[51:100])
 prob
 
-set.seed(7)
-Pall(50,1)
-set.seed(7)
-test <- dloop(50)
-test
-prob <- 1 - sum(test[51:100])
-prob  # exactly same as Pall(50,1)
 
 
+# Q6
 x<-seq(1,100)
 
-max <- max(sample)
 barplot(dloop(50),names=x,xlab = 'Loop length',ylab = 'Probability',ylim = c(0,0.7))
 lines(x,dloop(50),type="l",col="blue")
 

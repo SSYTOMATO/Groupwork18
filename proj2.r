@@ -243,3 +243,10 @@ test
 prob <- 1 - sum(test[51:100])
 prob  # exactly same as Pall(50,1)
 
+
+x<-seq(1,100)
+
+max <- max(sample)
+barplot(dloop(50),names=x,xlab = 'Loop length',ylab = 'Probability',ylim = c(0,0.7))
+lines(x,dloop(50),type="l",col="blue")
+

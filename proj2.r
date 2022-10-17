@@ -21,6 +21,15 @@
 
 
 #-------------------------------------------------------------------------------
+# Function unit is a pre-function for other functions later. 
+# Input of this function are n,k,first and box.
+# 'n' is the maximum number that boxes can be opened. 'k' is the index of the 
+# first prisoner. 'first' is the index of the first box we chosen.
+# 'box' is the integer simulated randomly, which represents the number on the
+# card contained in each box.
+# This function is used to determine whether prisoners can successful within n
+# times. If they success we define success as 1, otherwise we mark it as 0.
+# 
 # a pre function
 Unit <- function(n,k,first,box){
   box_index <- first
@@ -36,7 +45,14 @@ Unit <- function(n,k,first,box){
   success
 }
 
-
+# Function pone is used to estimate probability of single prisoners success in  
+# each strategy within nreps experiments. 
+# 'n' is used to calculate the number of prisoners (2*n) and box (2*n).
+# 'k' is similar to the function Unit, which is the index of the first prisoner.
+# 'strategy' can equal to 1,2,3, represents 3 strategies respectively.
+# 'nreps' is the amount of experiments, which is defaulted to 10000.
+# After we run this function we can get estimate success probability of
+# those 3 strategies for individual prisoner.
 # function Pone
 Pone <- function(n,k,strategy,nreps=10000){
   
@@ -249,4 +265,11 @@ x<-seq(1,100)
 
 barplot(dloop(50),names=x,xlab = 'Loop length',ylab = 'Probability',ylim = c(0,0.7))
 lines(x,dloop(50),type="l",col="blue")
-
+# Analysis:
+# When we perform the experiment with n=50. We can see from the graph 
+# that a loop of length 1 has a higher probability compared to the other lengths.
+# And as the length increases, the probability decreases abruptly. 
+# When the length of the loop exceeds 50, the probability tends to zero.
+# This is keeping up with our rules that the maximum number of boxes 
+# that can be opened is n=50, otherwise it is considered a failure. 
+# Therefore the probability of success in a loop of these lengths should be 0.

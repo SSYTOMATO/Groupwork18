@@ -141,6 +141,10 @@ for (strategy in 1:3){
 }
 matrix_n50
 
+# Joint success probability of strategy 2&3 are close to 0 but
+# joint success probability of strategy 1 is surprisingly high
+# The result is more obvious when n becomes larger.
+
 
 # dloop from gzy
 

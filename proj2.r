@@ -13,12 +13,26 @@
 # Everyone undertook roughly 1/3 of the work.
 
 #-------------------------------------------------------------------------------
-# Overview
 
+# This code tries to solve a particular problem by three different strategies,
+# estimate the probability of success of each strategy by stochastic simulation
+# and do some investigation of one strategy which performs surprisingly better.
 
+# The problem: A room contains 2n boxes numbered from 1 to 2n. There are 2n
+#              cards, each printed with a unique number from 1 to 2n and
+#              randomly placed one in each box. 2n prisoners numbered from 1 to
+#              2n need to find the card with their number on it by opening a 
+#              maximum on n boxes. After each prisoner’s go, the room is set to
+#              its original state and communication is not allowed. If all
+#              prisoners succeed in finding their number, then they all go free.
 
-
-
+# Strategy 1: The prisoner starts at the box with their number on it, opens it
+#             and find the card with number k. If k is not their prisoner number,
+#             they go to box number k, open it and repeat the process until they
+#             have either found the card with their number on it, or opened n 
+#             boxes without finding it.
+# Strategy 2: As strategy 1, but starting from a randomly selected box.
+# Strategy 3: They open n boxes at random, checking each card for their number.
 
 #-------------------------------------------------------------------------------
 # Function unit is a pre-function for other functions later. 
@@ -44,6 +58,8 @@ Unit <- function(n,k,first,box){
   }
   success
 }
+
+#-------------------------------------------------------------------------------
 
 # Function pone is used to estimate probability of single prisoners success in  
 # each strategy within nreps experiments. 
@@ -85,38 +101,47 @@ Pone <- function(n,k,strategy,nreps=10000){
   success/nreps
 }
 
-
-# function Pall
-# Similar as function Pone, but consider joint probability, that is,
-# in each simulation, find whether all prisoners can success.
-# Simulate nreps times, calculate the probability.
+#-------------------------------------------------------------------------------
 
 Pall <- function(n,strategy,nreps=10000){
   
-  success_num <- 0
+  # Estimate the probability of all prisoners finding their number
+  # By stochastic simulation
+  
+  # Input: n (the maximum number of boxes one prisoner can open, also, 2n is
+  #           the number of prisoners, boxes and cards)
+  #        strategy (take values of 1, 2, 3,
+  #                  corresponding to strategies stated above)
+  #        nreps (the number of replicate simulations to run in order to
+  #               estimate the probability, with default value 10000)
+  # Output: a float which is the probability of all prisoners finding their number
+  
+  success_num <- 0  # the times of simulations with result of success
   
   # strategy 1
+  
   if (strategy == 1){
-    
-    for (rep in 1:nreps){
-      success <- 1
-      box <- sample(2*n,2*n)
-      for (k in 1:(2*n)){
-        success <- success * Unit(n,k,k,box)
-        if (success == 0){break}
+    for (rep in 1:nreps){     # loop for every simulation
+      success <- 1            # 1 represents success, 0 represents failure
+      box <- sample(2*n,2*n)  # place 2n card randomly
+      for (k in 1:(2*n)){     # loop for every prisoner
+        success <- success * Unit(n,k,k,box)  # variable success will remain 1
+                                              # if every prisoner successes, but
+                                              # will be 0 if any one fails
+        if (success == 0){break}  # fail, no need to continue
       }
-    success_num <- success_num + success  
+    success_num <- success_num + success  # if success, success_num will add 1
     }
   }
   
   # strategy 2
-  else if (strategy == 2){
-    
+  
+  else if (strategy == 2){      # similar as the strategy 1
     for (rep in 1:nreps){
       success <- 1
       box <- sample(2*n,2*n)
       for (k in 1:(2*n)){
-        first <- sample(2*n,1)
+        first <- sample(2*n,1)  # randomly choose the first box
         success <- success * Unit(n,k,first,box)
         if (success == 0){break}
       }
@@ -125,23 +150,31 @@ Pall <- function(n,strategy,nreps=10000){
   }
   
   # strategy 3
-  #if(strategy == 3)
+
   else {
     for (rep in 1:nreps){
       success <- 1
       for (k in 1:(2*n)){
-        choice <-sample(2*n,n)
-        success <- success * k %in% choice
+        choice <-sample(2*n,n)  # randomly choose half of boxes 
+        success <- success * k %in% choice # whether the prisoner's number is in
+                                           # the boxes he chooses
         if (success == 0){break}
       }
       success_num <- success_num + success
     }
   } 
-  success_num/nreps
+  
+  success_num/nreps  # success probability = (the number of simulations with
+                     # result of success) / (the total number of simulations) 
 }
 
+#-------------------------------------------------------------------------------
 
-# n = 5 matrix, row-strategy, column-indi/joint
+# Example codes for n = 5 and 50 with three different strategies
+# results for each n is shown in a matrix
+# row i is the result of strategy i
+# column 1 is individual probability and column 2 is joint success probability
+
 matrix_n5 <- matrix(0,3,2)
 for (strategy in 1:3){
   matrix_n5[strategy,1] <- Pone(5,1,strategy)
@@ -157,75 +190,12 @@ for (strategy in 1:3){
 }
 matrix_n50
 
+# Q4 here
 # Joint success probability of strategy 2&3 are close to 0 but
 # joint success probability of strategy 1 is surprisingly high
 # The result is more obvious when n becomes larger.
 
-
-# dloop from gzy
-
-dloop <- function(n,nreps){
-  freq <- c(rep(0,2*n))
-  for (rep in 1:nreps){
-    u <- sample(2*n,2*n)
-    u_index <- sample(2*n,1)
-    for (i in 1:(2*n)){
-      if (u_index != u[u_index]){
-        u_index <- u[u_index]
-      } else {
-        freq[i] <- freq[i] + 1
-        break
-      }   
-    }
-  }
-  prob <- freq/nreps
-  print(prob)
-}
-
-
-
-# Q5 from ssy
-
-dloop <- function(n,nreps){
-  
-  freq <- c(rep(0,2*n))
-  u_index <- seq(1,2*n)
-  for (rep in 1:nreps){
-    u <- sample(2*n,2*n)
-    k <- sample(u_index,1)
-    start_value <- k
-    length <- 1
-    while (k != u[k]) {
-      k <- u[k]
-      if(start_value == u[k]){break}
-      length <- length+1}
-    freq[length] <- freq[length]+1
-    rep <- rep+1
-  }
-  prob <- freq/nreps
-  print(prob)
-}
-
-dloop(50,10000)
-
-n<-5 
-u <- sample(2*n,2*n)
-u_index <- seq(1,2*n)
-i<-1
-
-k <- 1
-length <-1
-while (k != u[k]) {
-  k <- u[k]
-  if(u_index[1] == u[k]){break}
-  length <- length+1
-  }
-length
-i <- i+1
-freq[length] <- freq[length]+1
-
-
-
+#-------------------------------------------------------------------------------
 
 # a new dloop function from zmy
 

@@ -35,17 +35,20 @@
 # Strategy 3: They open n boxes at random, checking each card for their number.
 
 #-------------------------------------------------------------------------------
-# Function unit is a pre-function for other functions later. 
-# Input of this function are n,k,first and box.
-# 'n' is the maximum number that boxes can be opened. 'k' is the index of the 
-# first prisoner. 'first' is the index of the first box we chosen.
-# 'box' is the integer simulated randomly, which represents the number on the
-# card contained in each box.
-# This function is used to determine whether prisoners can successful within n
-# times. If they success we define success as 1, otherwise we mark it as 0.
+
 # 
 # a pre function
 Unit <- function(n,k,first,box){
+# Function unit is a pre-function for other functions later, which  is used to 
+# determine whether prisoners can successful within n times.
+# 
+# Input: n (the maximum number that boxes can be opened)
+#        k (the index of the first prisoner)
+#        first (the index of the first box we chosen)
+#        box (the integer simulated randomly, which represents the number on the
+#        card contained in each box)
+# Output: an integer which is marked as 1 when it success, otherwise marked as 0
+  
   box_index <- first
   success <- 0
   for (i in 1:n){
@@ -61,17 +64,16 @@ Unit <- function(n,k,first,box){
 
 #-------------------------------------------------------------------------------
 
-# Function pone is used to estimate probability of single prisoners success in  
-# each strategy within nreps experiments. 
-# 'n' is used to calculate the number of prisoners (2*n) and box (2*n).
-# 'k' is similar to the function Unit, which is the index of the first prisoner.
-# 'strategy' can equal to 1,2,3, represents 3 strategies respectively.
-# 'nreps' is the amount of experiments, which is defaulted to 10000.
-# After we run this function we can get estimate success probability of
-# those 3 strategies for individual prisoner.
+
 # function Pone
 Pone <- function(n,k,strategy,nreps=10000){
-  
+# Function pone is used to estimate probability of single prisoners success in  
+# each strategy within nreps experiments. 
+# Input: n (used to calculate the number of prisoners (2*n) and box (2*n))
+#        k (the index of the first prisoner)
+#        strategy (can equal to 1,2,3, represents 3 strategies respectively)
+#        nreps (the amount of experiments, which is defaulted to 10000)
+# Output: a float which is the probability 1 prisoner can find his or her number
   success <- 0
     
     # strategy 1

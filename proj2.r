@@ -192,7 +192,7 @@ for (strategy in 1:3){
 }
 matrix_n50
 
-# Q4 here
+# Remarks on the results:
 # Joint success probability of strategy 2&3 are close to 0 but
 # joint success probability of strategy 1 is surprisingly high
 # The result is more obvious when n becomes larger.
@@ -202,6 +202,17 @@ matrix_n50
 # a new dloop function from zmy
 
 dloop <- function(n,nreps=10000){
+  
+  # Function dloop is used to estimate probability of each loop length from 1
+  # to 2n occurring at least once in a random shuffling of cards to boxes
+  
+  # Input: n (2n is used to calculate the number of boxes, loop length and 
+  #           number of frequency of each loop length)
+  #        nreps (the number of replicate simulations to run in order to 
+  #               estimate the probability, with default value 10000)
+  # Output: a 2n vector of probabilities of each loop length occurring at
+  #         least once in a random shuffling of cards to boxes
+  
   freq <- rep(0,2*n)
   for (reps in 1:nreps){
     u <- sample(2*n,2*n)

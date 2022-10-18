@@ -41,7 +41,7 @@
 Unit <- function(n,k,first,box){
 # Function unit is a pre-function for other functions later, which  is used to 
 # determine whether prisoners can successful within n times.
-# 
+
 # Input: n (the maximum number that boxes can be opened)
 #        k (the index of the first prisoner)
 #        first (the index of the first box we chosen)
@@ -67,16 +67,19 @@ Unit <- function(n,k,first,box){
 
 # function Pone
 Pone <- function(n,k,strategy,nreps=10000){
+  
 # Function pone is used to estimate probability of single prisoners success in  
 # each strategy within nreps experiments. 
+  
 # Input: n (used to calculate the number of prisoners (2*n) and box (2*n))
 #        k (the index of the first prisoner)
 #        strategy (can equal to 1,2,3, represents 3 strategies respectively)
 #        nreps (the amount of experiments, which is defaulted to 10000)
 # Output: a float which is the probability 1 prisoner can find his or her number
+  
   success <- 0
     
-    # strategy 1
+  # strategy 1
   if (strategy == 1){
     for (rep in 1:nreps){
       box <- sample(2*n,2*n)
@@ -84,7 +87,7 @@ Pone <- function(n,k,strategy,nreps=10000){
     }
   }
     
-    # strategy 2
+  # strategy 2
   else if (strategy == 2){
     for (rep in 1:nreps){
       box <- sample(2*n,2*n)
@@ -93,7 +96,7 @@ Pone <- function(n,k,strategy,nreps=10000){
     }
   }
   
-    # strategy 3
+  # strategy 3
   else if(strategy == 3){
     for (rep in 1:nreps){
       choice <-sample(2*n,n)
@@ -107,16 +110,16 @@ Pone <- function(n,k,strategy,nreps=10000){
 
 Pall <- function(n,strategy,nreps=10000){
   
-  # Estimate the probability of all prisoners finding their number
-  # By stochastic simulation
+# Estimate the probability of all prisoners finding their number
+# By stochastic simulation
   
-  # Input: n (the maximum number of boxes one prisoner can open, also, 2n is
-  #           the number of prisoners, boxes and cards)
-  #        strategy (take values of 1, 2, 3,
-  #                  corresponding to strategies stated above)
-  #        nreps (the number of replicate simulations to run in order to
-  #               estimate the probability, with default value 10000)
-  # Output: a float which is the probability of all prisoners finding their number
+# Input: n (the maximum number of boxes one prisoner can open, also, 2n is
+#           the number of prisoners, boxes and cards)
+#        strategy (take values of 1, 2, 3,
+#                  corresponding to strategies stated above)
+#        nreps (the number of replicate simulations to run in order to
+#               estimate the probability, with default value 10000)
+# Output: a float which is the probability of all prisoners finding their number
   
   success_num <- 0  # the times of simulations with result of success
   
@@ -177,6 +180,7 @@ Pall <- function(n,strategy,nreps=10000){
 # row i is the result of strategy i
 # column 1 is individual probability and column 2 is joint success probability
 
+# n = 5
 matrix_n5 <- matrix(0,3,2)
 for (strategy in 1:3){
   matrix_n5[strategy,1] <- Pone(5,1,strategy)
@@ -184,7 +188,7 @@ for (strategy in 1:3){
 }
 matrix_n5
 
-# n = 50 matrix, row-strategy, column-indi/joint
+# n = 50
 matrix_n50 <- matrix(0,3,2)
 for (strategy in 1:3){
   matrix_n50[strategy,1] <- Pone(50,1,strategy)
@@ -203,15 +207,15 @@ matrix_n50
 
 dloop <- function(n,nreps=10000){
   
-  # Function dloop is used to estimate probability of each loop length from 1
-  # to 2n occurring at least once in a random shuffling of cards to boxes
+# Function dloop is used to estimate probability of each loop length from 1
+# to 2n occurring at least once in a random shuffling of cards to boxes
   
-  # Input: n (2n is used to calculate the number of boxes, loop length and 
-  #           number of frequency of each loop length)
-  #        nreps (the number of replicate simulations to run in order to 
-  #               estimate the probability, with default value 10000)
-  # Output: a 2n vector of probabilities of each loop length occurring at
-  #         least once in a random shuffling of cards to boxes
+# Input: n (2n is used to calculate the number of boxes, loop length and 
+#           number of frequency of each loop length)
+#        nreps (the number of replicate simulations to run in order to 
+#               estimate the probability, with default value 10000)
+# Output: a 2n vector of probabilities of each loop length occurring at
+#         least once in a random shuffling of cards to boxes
   
   freq <- rep(0,2*n)
   for (reps in 1:nreps){
@@ -243,7 +247,7 @@ prob
 
 
 
-# Q6
+# visualization
 x<-seq(1,100)
 
 barplot(dloop(50),names=x,xlab = 'Loop length',ylab = 'Probability',ylim = c(0,0.7))

@@ -208,8 +208,6 @@ matrix_n50
 
 #-------------------------------------------------------------------------------
 
-# a new dloop function from zmy
-
 dloop <- function(n,nreps=10000){
   
 # Function dloop is used to estimate probability of each loop length from 1
@@ -222,27 +220,30 @@ dloop <- function(n,nreps=10000){
 # Output: a 2n vector of probabilities of each loop length occurring at
 #         least once in a random shuffling of cards to boxes
   
-    freq <- rep(0,2*n)
-  for (reps in 1:nreps){
-    u <- sample(2*n,2*n)
-    u_index <- 1:(2*n)
-    len_list <- c()
-    while (length(u_index) != 0){
-      first <- u_index[1]
-      k <- first
-      ring <- k
-      length <- 1
-      while (u[k] != first){
-        k <- u[k]
-        length <- length + 1
-        ring <- c(ring,k)
+    freq <- rep(0,2*n)   # number of each loop length occurring 
+  for (reps in 1:nreps){ # loop for nreps simulations
+    u <- sample(2*n,2*n) # generate cards number in boxes
+    u_index <- 1:(2*n)   # a vector of box number
+    len_list <- c()      # a vector to store the loop length
+    while (length(u_index) != 0){ # while there are still boxes to be opened
+      first <- u_index[1] # the first box number 
+      k <- first          # box number with initial value equal to first
+      ring <- k           # loop starting with number k
+      length <- 1         # loop length with initial value 1
+      while (u[k] != first){ # while card number in box k is not equal to
+                             # the first box number
+        k <- u[k]            # let box number equal to the card number 
+        length <- length + 1 # loop length increases 1
+        ring <- c(ring,k)    # add the new box number to the loop
       }
-      u_index <- u_index[-which(u_index %in% ring)]
-      len_list <- c(len_list,length)
+      u_index <- u_index[-which(u_index %in% ring)] # remove the box number used
+      len_list <- c(len_list,length)                # store this loop length
     }
+    # add one to the corresponding loop length frequency 
     freq[which(1:(2*n) %in% len_list)] <- freq[which(1:(2*n) %in% len_list)] + 1
   }
-  freq/nreps
+  freq/nreps # probability = (the number of simulations with result of freq)
+             #  / (the total number of simulations)
 }
 
 test <- dloop(50)

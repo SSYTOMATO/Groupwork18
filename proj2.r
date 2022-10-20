@@ -253,10 +253,10 @@ dloop <- function(n,nreps=10000){
 }
 
 
-# some changes needed
-
 test <- dloop(50)
-test
+# Since loop with length greater than 50 only occurs at most once in each 
+# simulation, this is mutually exclusive to the event that there is no loop 
+# length greater than 50.
 prob <- 1 - sum(test[51:100])
 prob
 

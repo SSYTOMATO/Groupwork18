@@ -26,9 +26,8 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
                  maxit=100,max.half=20,eps=1e-6){
   k <- 0
   
-  
-  for(n in 1:maxit){
-    theta <- theta + delta
+  while(k <= maxit){
+
     func_k <- func(theta,...)
     grad_k <- grad(theta,...)
     if (is.NULL(hess)){
@@ -41,6 +40,8 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     
     ## judge whether theta is just the parameter we want to find
     ## if it is, break
+    ## if it is not and k = maxit, warning 3
+    
     
     ## whether hess_k is positive definite,if not, perturb it.
     
@@ -57,16 +58,15 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     }
     
     theta <- theta + delta
-    
+    k <- k+1
     
   }
   
-  # if find the theta, check whether hess is positive definite, warning 4
-  
-  # else(theta is not found), warning 3
-  
+  # for final theta, check whether hess is positive definite, warning 4
+  # the inverse of the Hessian matrix?
   
   
+ c(f=func_k, theta=theta, iter=k, g=grad_k, Hi) 
 }  
   
   

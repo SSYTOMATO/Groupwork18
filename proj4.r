@@ -8,10 +8,10 @@
 
 # find hessain matrix
 
-hessain <- function(theta,grad,...,eps=1e-6){
+hessian <- function(theta,grad,...,eps=1e-6){
   Hfd <- matrix(0,length(theta),length(theta))
   gll0 <- grad(theta,...)
-  for(i in i:length(theta)){
+  for(i in 1:length(theta)){
     th1 <- theta
     th1[i] <- th1[i] + eps
     gll1 <- grad(th1,...)
@@ -27,7 +27,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
   k <- 0
   func_k <- func(theta,...)
   grad_k <- grad(theta,...)
-  if (is.NULL(hess)){
+  if (is.null(hess)){
     hess_k <- hessian(theta,grad,...)
   }else{hess_k <- hess(theta,...)}
   
@@ -39,24 +39,28 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
   while(k <= maxit){
     
     # judge whether theta is just the parameter we want to find
-    if (abs(grad_k) < tol*abs(func_k)+fscale){
+    if (sum(abs(grad_k) < tol*(abs(func_k)+fscale))==length(grad_k)){
       break
     } else if (k==maxit){
       stop('maxit is reached without convergence')
     }
     
     
-    multiple <- 1e-6
     hess_ori <- hess_k
-    norm_matrix <- norm(hess_ori,type = 'I')
+    multiple <- 1e-6
+    norm <- norm(hess_ori,type = 'I')
     check <- try(chol(hess_k))
-    while (inherits(check,'try-error')){
-      hess_k <- hess_ori + multiple*norm_matrix
+    print(inherits(check,'try-error'))
+    while(inherits(check,'try-error')){
+      hess_k <- hess_ori + multiple*norm
       check <- try(chol(hess_k))
+      print(inherits(check,'try-error'))
       multiple <- multiple*10
+      print(multiple)
     } 
   
     delta <- -chol2inv(chol(hess_k))%*%grad_k
+    print(delta)
     
     if (func(theta+delta) >= func_k){
       for (i in 1:max.half){
@@ -73,12 +77,8 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     k <- k+1
     func_k <- func(theta,...)
     grad_k <- grad(theta,...)
-    if (sum(is.finite(func_k))!= length(func_k)){
-      
-    }
-        
-    
-    if (is.NULL(hess)){
+
+    if (is.null(hess)){
       hess_k <- hessian(theta,grad,...)
     }else{hess_k <- hess(theta,...)}
     
@@ -90,9 +90,25 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     stop('the Hessian is not positive definite at convergence')
   }
   Hi <- chol2inv(chol(hess_k))
+
   
-  
-  
- c(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi) 
+ list(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi) 
 }  
-  
+
+th <- c(-5000, 10)
+rb <- function(th,k=2) {
+  k*(th[2]-th[1]^2)^2 + (1-th[1])^2
+}
+gb <- function(th,k=2) {
+  c(-2*(1-th[1])-k*4*th[1]*(th[2]-th[1]^2),k*2*(th[2]-th[1]^2))
+}
+hb <- function(th,k=2) {
+  h <- matrix(0,2,2)
+  h[1,1] <- 2-k*2*(2*(th[2]-th[1]^2) - 4*th[1]^2)
+  h[2,2] <- 2*k
+  h[1,2] <- h[2,1] <- -4*k*th[1]
+  h
+}
+
+newt(th,rb,gb)
+newt(th,rb,gb,hess=hb)

@@ -31,8 +31,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     hess_k <- hessian(theta,grad,...)
   }else{hess_k <- hess(theta,...)}
   
-  if (sum(is.finite(func_k))+sum(is.finite(grad_k)) != 
-      length(func_k)+length(grad_k)){
+  if (sum(is.infinite(func_k))+sum(is.infinite(grad_k)) != 0 ){
     stop('the objective or derivatives are not finite at the initial theta')
   }
 
@@ -47,16 +46,25 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     }
     
     
-    ## remaining1: whether hess_k is positive definite,if not, perturb it.
-    
-    ## remaining2: find the step(delta) by delta= -(hess_k)^(-1) %*% grad_k
+    multiple <- 1e-6
+    hess_ori <- hess_k
+    norm_matrix <- norm(hess_ori,type = 'I')
+    check <- try(chol(hess_k))
+    while (inherits(check,'try-error')){
+      hess_k <- hess_ori + multiple*norm_matrix
+      check <- try(chol(hess_k))
+      multiple <- multiple*10
+    } 
+  
+    delta <- -chol2inv(chol(hess_k))%*%grad_k
     
     if (func(theta+delta) >= func_k){
       for (i in 1:max.half){
         delta <- delta/2
-        if (func(theta+delta) < func_k){break}
+        if (sum(is.infinite(func_k))!=0){next}
+        if (func(theta+delta)<func_k){break}
       }
-      if (func(theta+delta) >= func_k){
+      if (func(theta+delta)>=func_k | sum(is.infinite(func_k))!=0){
         stop('the step fails to reduce the objective with max.half halvings')
       }
     }
@@ -65,18 +73,26 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     k <- k+1
     func_k <- func(theta,...)
     grad_k <- grad(theta,...)
+    if (sum(is.finite(func_k))!= length(func_k)){
+      
+    }
+        
+    
     if (is.NULL(hess)){
       hess_k <- hessian(theta,grad,...)
     }else{hess_k <- hess(theta,...)}
     
   }
   
-  # remaining3: check whether final hess is positive definite, warning 4
-  # the inverse of the Hessian matrix?
+
+  check <- try(chol(hess_k))
+  if (inherits(check,'try-error')){
+    stop('the Hessian is not positive definite at convergence')
+  }
+  Hi <- chol2inv(chol(hess_k))
   
   
- c(f=func_k, theta=theta, iter=k, g=grad_k, Hi) 
+  
+ c(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi) 
 }  
   
-  
-

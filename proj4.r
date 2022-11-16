@@ -10,9 +10,14 @@
 # Mengyao Zhang: wrote the framework of the code, including loops and
 #                some if statements.
 # Everyone undertook roughly 1/3 of the work.
+
 #-------------------------------------------------------------------------------
 
-# find hessain matrix
+# This code is to create an R function, newt, to implement Newton's method for 
+# minimization of functions. 
+
+
+# find hessian matrix
 
 hessian <- function(theta,grad,...,eps=1e-6){
   Hfd <- matrix(0,length(theta),length(theta)) # create an empty matrix
@@ -30,6 +35,32 @@ hessian <- function(theta,grad,...,eps=1e-6){
 
 newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
                  maxit=100,max.half=20,eps=1e-6){
+# Function newt is used to implement the optimization process and find the 
+# minimum value of the objective function and corresponding parameters.
+
+# Input: theta (a vector of initial values for the optimization parameters)
+#        func (the objective function to minimize)
+#        grad (the gradient function with the same arguments as func returning  
+#              the gradient vector of the objective function w.r.t. the elements 
+#              of parameter vector,)
+#        hess (the Hessian matrix function with the same arguments as func 
+#              returning the Hessian matrix of the objective function w.r.t. the 
+#              elements of parameter vector. If not provided, it is obtained by
+#              finite difference of the gradient vector)
+#        . . . (used to pass any arguments of func, grad and hess after the
+#               parameter vector)
+#        tol (convergence tolerance)
+#        fscale (estimate of magnitude of func near the optimum)
+#        maxit (maximum number of Newton iterations)
+#        max.half (maximum number of times of halving process before concluding 
+#                  that it fails to improve the objective function)
+#        eps (the finite difference interval)
+#
+  
+# Output: a list containing the minimum value of objective function, the
+#         corresponding parameter vector, number of iterations, the gradient
+#         vector and the inverse of Hessian matrix if it is positive definite.
+  
   k <- 0
   func_k <- func(theta,...)
   grad_k <- grad(theta,...)

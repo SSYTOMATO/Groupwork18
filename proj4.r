@@ -101,8 +101,10 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
         if (sum(is.infinite(func(theta+delta)))!=0){next}
         if (func(theta+delta)<func_k){break}
       }
-      if (func(theta+delta)>=func_k | sum(is.infinite(func(theta+delta)))!=0){
+      if (func(theta+delta)>=func_k){
         stop('the step fails to reduce the objective with max.half halvings')
+      }else if(sum(is.infinite(func(theta+delta)))+sum(is.na(func(theta+delta)))!=0){
+        stop('the step fails to find the finite objective with max.half halvings')
       }
     }
     

@@ -50,17 +50,13 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     multiple <- 1e-6
     norm <- norm(hess_ori,type = 'I')
     check <- try(chol(hess_k))
-    print(inherits(check,'try-error'))
     while(inherits(check,'try-error')){
       hess_k <- hess_ori + multiple*norm
       check <- try(chol(hess_k))
-      print(inherits(check,'try-error'))
       multiple <- multiple*10
-      print(multiple)
     } 
   
     delta <- -chol2inv(chol(hess_k))%*%grad_k
-    print(delta)
     
     if (func(theta+delta) >= func_k){
       for (i in 1:max.half){
@@ -95,7 +91,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
  list(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi) 
 }  
 
-th <- c(-5000, 10)
+th <- c(4, 10)
 rb <- function(th,k=2) {
   k*(th[2]-th[1]^2)^2 + (1-th[1])^2
 }

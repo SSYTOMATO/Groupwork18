@@ -17,7 +17,7 @@ hessian <- function(theta,grad,...,eps=1e-6){
     gll1 <- grad(th1,...)
     Hfd[i,] <- (gll1 - gll0)/eps
   }
-  Hfd
+  (t(Hfd)+Hfd)/2
 }
 
 
@@ -49,10 +49,10 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     hess_ori <- hess_k
     multiple <- 1e-6
     norm <- norm(hess_ori,type = 'I')
-    check <- try(chol(hess_k))
+    check <- try(chol(hess_k), silent=TRUE)
     while(inherits(check,'try-error')){
       hess_k <- hess_ori + multiple*norm
-      check <- try(chol(hess_k))
+      check <- try(chol(hess_k), silent=TRUE)
       multiple <- multiple*10
     } 
   
@@ -61,10 +61,10 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     if (func(theta+delta) >= func_k){
       for (i in 1:max.half){
         delta <- delta/2
-        if (sum(is.infinite(func_k))!=0){next}
+        if (sum(is.infinite(func(theta+delta)))!=0){next}
         if (func(theta+delta)<func_k){break}
       }
-      if (func(theta+delta)>=func_k | sum(is.infinite(func_k))!=0){
+      if (func(theta+delta)>=func_k | sum(is.infinite(func(theta+delta)))!=0){
         stop('the step fails to reduce the objective with max.half halvings')
       }
     }
@@ -81,17 +81,19 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
   }
   
 
-  check <- try(chol(hess_k))
+  check <- try(chol(hess_k), silent=TRUE)
   if (inherits(check,'try-error')){
-    stop('the Hessian is not positive definite at convergence')
+    result <- list(f=func_k, theta=theta, iter=k, g=grad_k)
+    warning('the Hessian is not positive definite at convergence')
+  }else{
+    Hi <- chol2inv(chol(hess_k))
+    result <- list(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi)
   }
-  Hi <- chol2inv(chol(hess_k))
-
   
- list(f=func_k, theta=theta, iter=k, g=grad_k, Hi=Hi) 
+ result
 }  
 
-th <- c(4, 10)
+th <- c(-2, -4)
 rb <- function(th,k=2) {
   k*(th[2]-th[1]^2)^2 + (1-th[1])^2
 }
@@ -105,6 +107,6 @@ hb <- function(th,k=2) {
   h[1,2] <- h[2,1] <- -4*k*th[1]
   h
 }
-
+th0 <- c(10,.1)
 newt(th,rb,gb)
 newt(th,rb,gb,hess=hb)

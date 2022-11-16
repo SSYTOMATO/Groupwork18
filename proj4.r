@@ -68,7 +68,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
     hess_k <- hessian(theta,grad,...)
   }else{hess_k <- hess(theta,...)}
   
-  if (sum(is.infinite(func_k))+sum(is.infinite(grad_k)) != 0 ){
+  if (sum(is.finite(func_k))+sum(is.finite(grad_k)) != length(func_k)+length(grad_k)){
     stop('the objective or derivatives are not finite at the initial theta')
   }
 
@@ -103,7 +103,7 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
       }
       if (func(theta+delta)>=func_k){
         stop('the step fails to reduce the objective with max.half halvings')
-      }else if(sum(is.infinite(func(theta+delta)))+sum(is.na(func(theta+delta)))!=0){
+      }else if(sum(is.finite(func(theta+delta)))!=length(func(theta+delta))){
         stop('the step fails to find the finite objective with max.half halvings')
       }
     }

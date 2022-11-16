@@ -15,15 +15,15 @@
 # find hessain matrix
 
 hessian <- function(theta,grad,...,eps=1e-6){
-  Hfd <- matrix(0,length(theta),length(theta))
-  gll0 <- grad(theta,...)
+  Hfd <- matrix(0,length(theta),length(theta)) # create an empty matrix
+  gll0 <- grad(theta,...)# gradient of the objective function at theta
   for(i in 1:length(theta)){
-    th1 <- theta
-    th1[i] <- th1[i] + eps
-    gll1 <- grad(th1,...)
-    Hfd[i,] <- (gll1 - gll0)/eps
+    th1 <- theta # initial values for the optimization parameters
+    th1[i] <- th1[i] + eps # increase th1[i] by eps
+    gll1 <- grad(th1,...) # compute resulting gradient
+    Hfd[i,] <- (gll1 - gll0)/eps # approximate second derives
   }
-  (t(Hfd)+Hfd)/2
+  (t(Hfd)+Hfd)/2 # symmetric Hfd
 }
 
 

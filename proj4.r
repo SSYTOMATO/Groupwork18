@@ -3,7 +3,13 @@
 
 # Github repo: https://github.com/SSYTOMATO/Groupwork18.git
 
-
+# Shangyun Sun: wrote function hessian and codes related to positive definite
+#               and judgment about infinity.
+# Ziyi Gu: wrote our own functions to test the validity and efficiency of codes 
+#          and added comments.
+# Mengyao Zhang: wrote the framework of the code, including loops and
+#                some if statements.
+# Everyone undertook roughly 1/3 of the work.
 #-------------------------------------------------------------------------------
 
 # find hessain matrix

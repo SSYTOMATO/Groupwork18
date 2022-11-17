@@ -20,6 +20,12 @@
 # find hessian matrix
 
 hessian <- function(theta,grad,...,eps=1e-6){
+# Function hessian is used to calculate a symmetric hessian matrix
+# Input: theta (a vector of initial values for the optimization parameters)
+#        grad (the gradient function with the same arguments as func returning  
+#              the gradient vector of the objective function w.r.t. the elements 
+#              of parameter vector,)
+# Output: Hfd (a symmetric hessian matrix)
   Hfd <- matrix(0,length(theta),length(theta)) # create an empty matrix
   gll0 <- grad(theta,...)# gradient of the objective function at theta
   for(i in 1:length(theta)){

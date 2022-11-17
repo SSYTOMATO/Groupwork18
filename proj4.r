@@ -61,49 +61,54 @@ newt <- function(theta,func,grad,hess=NULL,...,tol=1e-8,fscale=1,
 #         corresponding parameter vector, number of iterations, the gradient
 #         vector and the inverse of Hessian matrix if it is positive definite.
   
-  k <- 0
-  func_k <- func(theta,...)
-  grad_k <- grad(theta,...)
-  if (is.null(hess)){
-    hess_k <- hessian(theta,grad,...)
-  }else{hess_k <- hess(theta,...)}
+  k <- 0                          # number of iterations with initial value 0
+  func_k <- func(theta,...)       # objective function at theta
+  grad_k <- grad(theta,...)       # gradient function at theta
+  if (is.null(hess)){             # judge whether hess function is provided 
+    hess_k <- hessian(theta,grad,...) # let Hessian matrix be the function we defined
+  }else{hess_k <- hess(theta,...)}  # let Hessian matrix be the function provided
   
+  # issue error
   if (sum(is.finite(func_k))+sum(is.finite(grad_k)) != length(func_k)+length(grad_k)){
     stop('the objective or derivatives are not finite at the initial theta')
-  }
+  }  
 
     
-  while(k <= maxit){
+  while(k <= maxit){ # loop for every iteration
     
     # judge whether theta is just the parameter we want to find
     if (sum(abs(grad_k) < tol*(abs(func_k)+fscale))==length(grad_k)){
       break
-    } else if (k==maxit){
-      stop('maxit is reached without convergence')
+    } else if (k==maxit){ # maximum number of iteration is achieved 
+      stop('maxit is reached without convergence') # issue error
     }
     
     
-    hess_ori <- hess_k
-    multiple <- 1e-6
-    norm <- norm(hess_ori,type = 'I')
-    check <- try(chol(hess_k), silent=TRUE)
-    while(inherits(check,'try-error')){
-      hess_k <- hess_ori + multiple*norm
-      check <- try(chol(hess_k), silent=TRUE)
-      multiple <- multiple*10
+    hess_ori <- hess_k # store the original hessian matrix 
+    multiple <- 1e-6   # set the multiplier 
+    norm <- norm(hess_ori,type = 'I') # 
+    check <- try(chol(hess_k), silent=TRUE) # check if hessian matrix is + def
+    while(inherits(check,'try-error')){ # if hessian matrix is not + def
+      hess_k <- hess_ori + multiple*norm # perturb the hessian matrix
+      check <- try(chol(hess_k), silent=TRUE) 
+      multiple <- multiple*10 # multiply the multiplier by 10
     } 
   
-    delta <- -chol2inv(chol(hess_k))%*%grad_k
+    delta <- -chol2inv(chol(hess_k))%*%grad_k # compute delta value
     
-    if (func(theta+delta) >= func_k){
-      for (i in 1:max.half){
-        delta <- delta/2
-        if (sum(is.infinite(func(theta+delta)))!=0){next}
-        if (func(theta+delta)<func_k){break}
+    if (func(theta+delta) >= func_k){ # if the function is not improved 
+      for (i in 1:max.half){ # loop to improve the function
+        delta <- delta/2 # halve the dalta value
+        if (sum(is.infinite(func(theta+delta)))!=0){next} # if function is not
+                                                       # finite, go to next loop 
+        if (func(theta+delta)<func_k){break} # if function is improved, no need 
+                                             # to continue
       }
-      if (func(theta+delta)>=func_k){
+      if (func(theta+delta)>=func_k){ 
+        # if function not improved after max.half steps, issue error
         stop('the step fails to reduce the objective with max.half halvings')
       }else if(sum(is.finite(func(theta+delta)))!=length(func(theta+delta))){
+        # if function not finite after max.half steps, issue error
         stop('the step fails to find the finite objective with max.half halvings')
       }
     }
